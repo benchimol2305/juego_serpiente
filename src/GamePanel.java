@@ -262,3 +262,115 @@ class GamePanel extends JPanel implements ActionListener{
         keyInput = false; // Permite nueva entrada de teclado
     }
 
+    // Método para finalizar el juego
+    public void gameOver(){
+        timer.stop(); // Detiene el temporizador
+
+        // Si la puntuación es mayor que la más baja del top 10
+        if(applesEaten > lowestScore){
+            showJTextField = true; // Muestra campo para ingresar nombre
+        }
+    }
+
+
+    // Metodo para generar numero aleatorio
+    public int random(int range){
+        // Retorna un entero entre 0 y range-1
+        return (int)(Math.random() * range);
+    }
+
+    // Clase interna para manejar eventos de teclado
+    class MyKeyAdapter extends KeyAdapter{
+        public void keyPressed(KeyEvent k){
+
+            switch(k.getKeyCode()){
+                case (KeyEvent.VK_DOWN):
+                    if(direction != 'U' && keyInput == false){
+                        direction = 'D';
+                        keyInput = true;
+                    }
+                    break;
+                case (KeyEvent.VK_UP):
+                    if(direction != 'D' && !keyInput){
+                        direction = 'U';
+                        keyInput = true;
+                    }
+                    break;
+                case (KeyEvent.VK_LEFT):
+                    if(direction != 'R' && keyInput == false){
+                        direction = 'L';
+                        keyInput = true;
+                    }
+                    break;
+                case (KeyEvent.VK_RIGHT):
+                    if(direction != 'L' && keyInput == false){
+                        direction = 'R';
+                        keyInput = true;
+                    }
+                    break;
+                case (KeyEvent.VK_F2):
+                    if(!timer.isRunning()){
+                        startGame();
+                    }
+                    break;
+                case KeyEvent.VK_ESCAPE:
+                    parentFrame.switchToLobbyPanel();
+                    break;
+            }
+
+            // Manejo de entrada de texto para nombre del jugador
+            if(showJTextField){
+                if(k.getKeyCode() == KeyEvent.VK_ENTER){
+                    // Guarda la puntuacion y regresa al lobby
+                    actualScore = new Score(playerName, applesEaten);
+                    scoreList.add(actualScore);
+                    playerName = "";
+                    sortAndSave(); // Ordena y guarda puntuaciones
+                    showJTextField = false;
+                    parentFrame.switchToLobbyPanel();
+                }else if(k.getKeyCode() == KeyEvent.VK_BACK_SPACE && playerName.length() > 0){
+                    // Elimina ultimo caracter
+                    StringBuilder sb = new StringBuilder(playerName);
+                    sb.deleteCharAt(sb.length() - 1);
+                    playerName = sb.toString();
+                }
+                else{
+                    if(!k.isActionKey() && k.getKeyCode() != KeyEvent.VK_SHIFT && k.getKeyCode() != KeyEvent.VK_BACK_SPACE){
+                        playerName = playerName + k.getKeyChar();
+                    }
+                }
+
+                repaint();
+            }
+        }
+    }
+
+    // Método para ordenar y guardar las puntuaciones en archivo
+    public void sortAndSave(){
+        try{
+            BufferedWriter bw = new BufferedWriter(new FileWriter(new File("scores.data")));
+            scoreList.sort(Comparator.reverseOrder()); // Ordena de mayor a menor
+
+            // Guarda solo las top 10 puntuaciones
+            for(int i = 0; i < 10; i++){
+                Score element = scoreList.get(i);
+                bw.write(element.name + "," + String.valueOf(element.score) + "\n");
+            }
+            bw.flush(); // Asegura que los datos se escriban
+        }catch(IOException ex){
+            System.out.println("Error writing file");
+        }
+    }
+
+
+    public void sleep(int millis){
+        try{
+            Thread.sleep(millis);
+            System.out.println("Slept");
+        }catch(Exception ex){
+            System.out.println("Fatal Error in sleep() method");
+        }
+    }
+
+}
+
