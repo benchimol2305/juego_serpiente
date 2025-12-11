@@ -74,3 +74,92 @@ class GamePanel extends JPanel implements ActionListener{
         loadLowestScore();
         randomGameOverMessage = gameOverMessages[random(gameOverMessages.length)];
     }
+
+    // Metodo para cargar la lista de puntuaciones desde archivo
+    public void loadScoreList(){
+        try{
+            scoreList.clear();
+            BufferedReader buffer = new BufferedReader(new FileReader(new File("scores.data")));
+            String line;
+            String[] nameScore;
+            Score aux;
+
+
+            while((line = buffer.readLine()) != null){
+                nameScore = line.split(",");
+                aux = new Score(nameScore[0], Integer.parseInt(nameScore[1]));
+                scoreList.add(aux);
+            }
+            System.out.println("ArrayList loaded successfully");
+            System.out.println(scoreList);
+        }catch(Exception ex){
+            System.out.println("Error trying to read file");
+        }
+    }
+
+    // Metodo para cargar la puntuacion mas baja del top 10
+    public void loadLowestScore(){
+        // Ordena la lista de mayor a menor
+        scoreList.sort(Comparator.reverseOrder());
+        lowestScore = scoreList.get(9).getScore(); // Obtiene la décima puntuación (la más baja del top 10)
+        System.out.println("lowestScore: " + lowestScore);
+    }
+
+
+    // Metodo ejecutado por el temporizador en cada ciclo
+    public void actionPerformed(ActionEvent ev){
+        move(); // Mueve la serpiente
+        checkCollision(); // Verifica colisiones
+        eatApple(); // Verifica si se comió una manzana
+        repaint(); // Vuelve a dibujar el panel
+    }
+
+    // Metodo para dibujar componentes graficos
+    public void paintComponent(Graphics g){
+        super.paintComponent(g); // Llama al metodo de la superclase
+
+        // Dibujar manzana en appleX y appleY
+        g.setColor(Color.red);
+        g.fillOval(appleX , appleY, UNIT_SIZE, UNIT_SIZE);
+
+        // Dibujar cabeza de la serpiente
+        g.setColor(Color.green);
+        g.fillRect(snakeX[0], snakeY[0], UNIT_SIZE, UNIT_SIZE);
+        // Dibujar cuerpo de la serpiente
+        for(int i = 1; i < snakeSize; i++){
+            g.fillRect(snakeX[i], snakeY[i], UNIT_SIZE, UNIT_SIZE);
+        }
+
+        // Dibujar cadena de puntuacion
+        g.setColor(Color.white);
+        g.setFont(new Font("MS Gothic", Font.PLAIN, 25));
+        FontMetrics fontSize = g.getFontMetrics();
+        int fontX = SCREEN_WIDTH - fontSize.stringWidth("Puntaje: " + applesEaten) - 10;
+        int fontY = fontSize.getHeight();
+        g.drawString("Puntaje: " + applesEaten, fontX, fontY);
+
+
+        if(!timer.isRunning()){
+            // Imprimir pantalla de fin de juego
+            g.setColor(Color.white);
+            g.setFont(new Font("MS Gothic", Font.PLAIN, 58));
+            String message = randomGameOverMessage;
+            fontSize = g.getFontMetrics();
+            fontX = (SCREEN_WIDTH - fontSize.stringWidth(message)) / 2 ;
+            fontY = (SCREEN_HEIGHT - fontSize.getHeight()) /2;
+            g.drawString(message, fontX, fontY);
+
+            g.setFont(new Font("MS Gothic", Font.PLAIN, 24));
+            message = "Presiona F2 para reiniciar";
+            fontSize = g.getFontMetrics();
+            fontX = (SCREEN_WIDTH - fontSize.stringWidth(message)) / 2 ;
+            fontY = fontY + fontSize.getHeight() + 20;
+            g.drawString(message, fontX, fontY);
+
+
+            if(showJTextField){
+                drawJTextField(g);
+                drawPlayerName(g);
+            }
+        }
+    }
