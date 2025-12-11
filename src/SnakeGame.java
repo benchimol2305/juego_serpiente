@@ -3,4 +3,3 @@ public class SnakeGame{
         new SnakeFrame();
     }
 }
-
