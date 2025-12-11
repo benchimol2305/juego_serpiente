@@ -4,7 +4,7 @@ import java.awt.event.*;
 class SnakeFrame extends JFrame{
     LobbyPanel lobbyPanel = new LobbyPanel(this);
     GamePanel gamePanel = new GamePanel(this);
-    LeaderboardPanel leaderboardPanel = new LeaderboardPanel(this);
+    LeadeboardPanel leaderboardPanel = new LeadeboardPanel(this);
     private boolean addedLeaderboard = false;
 
     public SnakeFrame(){

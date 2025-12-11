@@ -4,8 +4,8 @@ import java.io.*;
 import java.util.*;
 import java.awt.event.*;
 
-public class LeaderboardPanel extends JPanel{
-    public static final int SCREEN_WIDTH = 600;
+public class LeadeboardPanel extends JPanel{
+    public static final int SCREEN_WIDTH = 800;
     public static final int SCREEN_HEIGHT = 600;
     public static final Font TITLE_FONT = new Font("Arial", 0, 42);
     public static final Font LINE_FONT = new Font("Arial", 0 , 32);
@@ -16,7 +16,7 @@ public class LeaderboardPanel extends JPanel{
 
 
 
-    public LeaderboardPanel(JFrame frame){
+    public LeadeboardPanel(JFrame frame){
         parentFrame = (SnakeFrame) frame;
 
         this.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
